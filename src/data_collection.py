@@ -69,6 +69,9 @@ def load_price_data_from_csv(csv_path: str, period_years: int = 2) -> dict:
     """
     print(f"Loading price data from {csv_path} ...")
     df = pd.read_csv(csv_path, parse_dates=["Date"])
+    # add this right after pd.read_csv in load_price_data_from_csv:
+    if "Ticker" in df.columns:
+        df = df.rename(columns={"Ticker": "Symbol"})
 
     # Filter to recent window
     cutoff = datetime.today() - timedelta(days=365 * period_years)
@@ -129,8 +132,8 @@ if __name__ == "__main__":
     print(phrasebank_df["label"].value_counts(), "\n")
 
     # 2. Price data from Kaggle CSV
-    csv_path = os.path.join(RAW_DIR, "sp500_stocks.csv")
-    price_data = load_price_data_from_csv(csv_path, period_years=2)
+    csv_path = os.path.join(RAW_DIR, "sp500_stocks_since2021.csv")
+    price_data = load_price_data_from_csv(csv_path, period_years=5)
 
     # 3. Returns
     returns_df = compute_returns(price_data)
